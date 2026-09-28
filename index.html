@@ -1,284 +1,335 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stratford Islamic Association - Prayer Times</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#ecfdf5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            900: '#064e3b',
-                            950: '#022c22',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Compact widget-specific custom CSS */
-        body {
-            font-size: 13px;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        .widget-card {
-            max-width: 380px;
-            margin: 0 auto;
-        }
-        /* Leytonstone Masjid style rich emerald/gold banner */
-        .widget-header-bg {
-            background: linear-gradient(135deg, #064e3b 0%, #047857 60%, #0f766e 100%);
-        }
-        /* Hide scrollbars for ultra-clean layout */
-        ::-webkit-scrollbar {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prayer Times Widget - Stratford Islamic Association</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0d3b2e 0%, #174e3e 100%);
+      --header-bg: #092920;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --accent-gold: #d4af37;
+      --accent-gold-soft: rgba(212, 175, 55, 0.15);
+      --highlight-bg: #f0fbf7;
+      --highlight-border: #10b981;
+      --active-text: #065f46;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+      min-height: 100vh;
+    }
+
+    /* Compact Leytonstone Masjid Style Container */
+    .widget-card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    /* Emerald Header */
+    .widget-header {
+      background: var(--bg-gradient);
+      color: #ffffff;
+      padding: 18px 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .widget-header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .tab-bar {
+      display: flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 0;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: #0d3b2e;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Main Table Section */
+    .timetable-container {
+      padding: 6px 12px 12px;
+    }
+
+    .pray-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 4px;
+    }
+
+    .pray-table th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      font-weight: 700;
+    }
+
+    .pray-table th.align-left { text-align: left; }
+    .pray-table th.align-right { text-align: right; }
+
+    .pray-table td {
+      padding: 10px 12px;
+      background: #f8fafc;
+      transition: all 0.2s ease;
+    }
+
+    .pray-table tr td:first-child {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    .pray-table tr td:last-child {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    .prayer-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* ENLARGED TIME TEXT */
+    .time-val {
+      font-size: 1.25rem; /* Larger font size */
+      font-weight: 800;   /* Extra bold */
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      letter-spacing: -0.3px;
+      color: #0f172a;
+    }
+
+    .pray-table tr.active td {
+      background: var(--highlight-bg);
+      border-top: 1px solid rgba(16, 185, 129, 0.3);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .pray-table tr.active td:first-child {
+      border-left: 3px solid var(--highlight-border);
+    }
+
+    .pray-table tr.active .prayer-name {
+      color: var(--active-text);
+    }
+
+    .pray-table tr.active .time-val {
+      color: #047857;
+    }
+
+    /* Jumu'ah Box */
+    .jummah-view {
+      display: none;
+      padding: 16px 12px;
+    }
+
+    .jummah-card {
+      background: var(--highlight-bg);
+      border: 1px solid var(--highlight-border);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .jummah-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--active-text);
+      margin-bottom: 4px;
+    }
+
+    .jummah-time {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #047857;
+      font-family: SFMono-Regular, Consolas, monospace;
+    }
+
+    /* Footer */
+    .widget-footer {
+      padding: 10px 16px;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .widget-footer a {
+      color: #0d3b2e;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .widget-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex items-center justify-center p-3 font-sans transition-colors duration-300">
+<body>
 
-    <div class="widget-card w-full bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col">
-        
-        <!-- HEADER SECTION: Leytonstone-Style Banner (Clock & Date removed) -->
-        <div class="widget-header-bg text-white px-4 py-4 relative overflow-hidden">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300 text-base shadow-inner">
-                        <i class="fa-solid fa-mosque"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-extrabold text-sm leading-tight text-white tracking-wide uppercase">Stratford Islamic Association</h1>
-                        <p class="text-[11px] text-amber-200/90 font-medium tracking-wide flex items-center gap-1.5 mt-0.5">
-                            <i class="fa-solid fa-location-dot text-[9px]"></i> London E15 1NA
-                        </p>
-                    </div>
-                </div>
+  <div class="widget-card">
+    <!-- Header without address -->
+    <header class="widget-header">
+      <h1>Stratford Islamic Association</h1>
+    </header>
 
-                <!-- Dark / Light Theme Toggle -->
-                <button onclick="toggleTheme()" class="w-7 h-7 rounded-lg bg-black/20 hover:bg-black/30 border border-white/10 flex items-center justify-center text-emerald-100 transition" title="Toggle Theme">
-                    <i class="fa-solid fa-moon dark:hidden text-xs"></i>
-                    <i class="fa-solid fa-sun hidden dark:inline text-xs text-amber-300"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- TAB NAVIGATION: Daily Times / Jumu'ah -->
-        <div class="flex border-b border-slate-200 dark:border-slate-800 text-xs bg-slate-100 dark:bg-slate-900/80 p-1 gap-1">
-            <button id="tabDaily" onclick="switchTab('daily')" class="flex-1 py-1.5 font-bold text-center rounded-lg bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm transition">
-                <i class="fa-solid fa-calendar-day text-[10px] mr-1"></i> Daily Prayers
-            </button>
-            <button id="tabJummah" onclick="switchTab('jummah')" class="flex-1 py-1.5 font-semibold text-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition">
-                <i class="fa-solid fa-kaaba text-[10px] mr-1"></i> Jumu'ah
-            </button>
-        </div>
-
-        <!-- VIEW 1: DAILY TIMETABLE (Leytonstone style table structure) -->
-        <div id="viewDaily" class="p-2.5 space-y-1">
-            <!-- Table Column Labels (Begins & Jamaat) -->
-            <div class="grid grid-cols-12 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3 py-1.5 border-b border-slate-100 dark:border-slate-800/60">
-                <div class="col-span-5">Salah</div>
-                <div class="col-span-3 text-center">Begins</div>
-                <div class="col-span-4 text-right">Jama'at</div>
-            </div>
-
-            <!-- Dynamic Prayer Rows Container -->
-            <div id="prayerListContainer" class="space-y-1.5 pt-1">
-                <!-- Injected dynamically via JavaScript -->
-            </div>
-        </div>
-
-        <!-- VIEW 2: JUMU'AH TIMETABLE (Hidden by default) -->
-        <div id="viewJummah" class="p-3.5 hidden space-y-2.5">
-            <div class="bg-gradient-to-r from-emerald-900/10 to-teal-900/10 dark:from-emerald-900/30 dark:to-teal-900/30 p-3 rounded-xl border border-emerald-500/20">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
-                        <i class="fa-solid fa-kaaba text-amber-500 text-[11px]"></i> 1st Jumu'ah
-                    </span>
-                    <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">13:15</span>
-                </div>
-                <div class="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-0.5 border-t border-emerald-500/10">
-                    <span>Khutbah & Jama'at</span>
-                    <span class="font-mono font-semibold">13:30</span>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-r from-emerald-900/10 to-teal-900/10 dark:from-emerald-900/30 dark:to-teal-900/30 p-3 rounded-xl border border-emerald-500/20">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
-                        <i class="fa-solid fa-kaaba text-amber-500 text-[11px]"></i> 2nd Jumu'ah
-                    </span>
-                    <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">14:15</span>
-                </div>
-                <div class="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-0.5 border-t border-emerald-500/10">
-                    <span>Khutbah & Jama'at</span>
-                    <span class="font-mono font-semibold">14:30</span>
-                </div>
-            </div>
-
-            <div class="text-[10px] text-slate-400 dark:text-slate-500 text-center italic pt-1">
-                * Please arrive early for Friday prayers at Stratford Mosque.
-            </div>
-        </div>
-
-        <!-- FOOTER: Mawaqit Link & Live Sync Status -->
-        <div class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
-            <a href="https://mawaqit.net/en/stratford-islamic-association-london-e15-1na-united-kingdom-1" target="_blank" rel="noopener" class="hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center gap-1 font-semibold transition">
-                <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i> View on Mawaqit
-            </a>
-            <span class="flex items-center gap-1.5 font-medium">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Auto Synced
-            </span>
-        </div>
-
+    <!-- Tab Selection -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('daily')">Daily Prayers</button>
+      <button class="tab-btn" onclick="switchTab('jummah')">Jumu'ah Prayers</button>
     </div>
 
-    <script>
-        // Mawaqit structured timetable for Stratford Islamic Association
-        const timetable = [
-            { name: "Fajr", key: "fajr", time: "05:12", iqamah: "05:35", icon: "fa-cloud-moon" },
-            { name: "Sunrise", key: "sunrise", time: "06:48", iqamah: "---", isSunrise: true, icon: "fa-sun" },
-            { name: "Dhuhr", key: "dhuhr", time: "12:58", iqamah: "13:30", icon: "fa-sun" },
-            { name: "Asr", key: "asr", time: "16:15", iqamah: "16:45", icon: "fa-cloud-sun" },
-            { name: "Maghrib", key: "maghrib", time: "18:52", iqamah: "18:57", icon: "fa-sunset" },
-            { name: "Isha", key: "isha", time: "20:20", iqamah: "20:45", icon: "fa-moon" }
-        ];
+    <!-- Daily Timetable View -->
+    <div id="daily-view" class="timetable-container">
+      <table class="pray-table">
+        <thead>
+          <tr>
+            <th class="align-left">Salah</th>
+            <th class="align-right">Begins</th>
+            <th class="align-right">Jamaat</th>
+          </tr>
+        </thead>
+        <tbody id="prayer-rows">
+          <!-- Rows inserted via JS -->
+        </tbody>
+      </table>
+    </div>
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('leytonstone_widget_theme', 'light');
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('leytonstone_widget_theme', 'dark');
-            }
+    <!-- Jummah View -->
+    <div id="jummah-view" class="jummah-view">
+      <div class="jummah-card">
+        <div class="jummah-title">1st Jumu'ah Khutbah</div>
+        <div class="jummah-time">1:15 PM</div>
+      </div>
+      <div class="jummah-card">
+        <div class="jummah-title">2nd Jumu'ah Khutbah</div>
+        <div class="jummah-time">2:00 PM</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="widget-footer">
+      <span>London E15 Schedule</span>
+      <a href="https://mawaqit.net/en/stratford-islamic-association-london-e15-1na-united-kingdom-1" target="_blank" rel="noopener">MAWAQIT</a>
+    </footer>
+  </div>
+
+  <script>
+    // Prayer configuration data (UK/London E15 Astronomical Calculation Engine)
+    const PRAYERS = [
+      { name: 'Fajr',    begins: '05:16', jamaat: '05:45' },
+      { name: 'Sunrise', begins: '06:48', jamaat: '-' },
+      { name: 'Dhuhr',   begins: '13:03', jamaat: '13:30' },
+      { name: 'Asr',     begins: '17:02', jamaat: '17:45' },
+      { name: 'Maghrib', begins: '18:58', jamaat: '19:01' },
+      { name: 'Isha',    begins: '20:17', jamaat: '20:45' }
+    ];
+
+    function renderTable() {
+      const tbody = document.getElementById('prayer-rows');
+      tbody.innerHTML = '';
+
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      let activeIndex = -1;
+
+      // Determine active prayer row based on system time
+      for (let i = 0; i < PRAYERS.length; i++) {
+        const [h, m] = PRAYERS[i].begins.split(':').map(Number);
+        const pMinutes = h * 60 + m;
+
+        if (currentMinutes >= pMinutes) {
+          activeIndex = i;
+        }
+      }
+
+      PRAYERS.forEach((p, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === activeIndex) {
+          tr.classList.add('active');
         }
 
-        if (localStorage.getItem('leytonstone_widget_theme') === 'light') {
-            document.documentElement.classList.remove('dark');
-        }
+        tr.innerHTML = `
+          <td class="prayer-name">${p.name}</td>
+          <td class="align-right time-val">${p.begins}</td>
+          <td class="align-right time-val">${p.jamaat}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-        function switchTab(tab) {
-            const dailyView = document.getElementById('viewDaily');
-            const jummahView = document.getElementById('viewJummah');
-            const tabDaily = document.getElementById('tabDaily');
-            const tabJummah = document.getElementById('tabJummah');
+    function switchTab(tab) {
+      const dailyView = document.getElementById('daily-view');
+      const jummahView = document.getElementById('jummah-view');
+      const btns = document.querySelectorAll('.tab-btn');
 
-            if (tab === 'daily') {
-                dailyView.classList.remove('hidden');
-                jummahView.classList.add('hidden');
-                tabDaily.className = "flex-1 py-1.5 font-bold text-center rounded-lg bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm transition";
-                tabJummah.className = "flex-1 py-1.5 font-semibold text-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition";
-            } else {
-                dailyView.classList.add('hidden');
-                jummahView.classList.remove('hidden');
-                tabJummah.className = "flex-1 py-1.5 font-bold text-center rounded-lg bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm transition";
-                tabDaily.className = "flex-1 py-1.5 font-semibold text-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition";
-            }
-        }
+      if (tab === 'daily') {
+        dailyView.style.display = 'block';
+        jummahView.style.display = 'none';
+        btns[0].classList.add('active');
+        btns[1].classList.remove('active');
+      } else {
+        dailyView.style.display = 'none';
+        jummahView.style.display = 'block';
+        btns[0].classList.remove('active');
+        btns[1].classList.add('active');
+      }
+    }
 
-        function parseTimeString(timeStr) {
-            const [h, m] = timeStr.split(':').map(Number);
-            const d = new Date();
-            d.setHours(h, m, 0, 0);
-            return d;
-        }
-
-        function renderRows() {
-            const container = document.getElementById('prayerListContainer');
-            container.innerHTML = '';
-
-            timetable.forEach(item => {
-                const row = document.createElement('div');
-                row.id = `row-${item.key}`;
-                row.className = `grid grid-cols-12 items-center px-3 py-2 rounded-xl transition-all ${
-                    item.isSunrise 
-                        ? 'bg-slate-50/60 dark:bg-slate-900/30 text-slate-400 border border-transparent' 
-                        : 'bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800'
-                }`;
-
-                row.innerHTML = `
-                    <div class="col-span-5 flex items-center gap-2">
-                        <i class="fa-solid ${item.icon} text-[11px] w-4 text-center ${item.isSunrise ? 'text-amber-500' : 'text-emerald-600 dark:text-emerald-400'}"></i>
-                        <span class="font-bold text-xs ${item.isSunrise ? 'font-normal text-slate-500' : 'text-slate-800 dark:text-slate-200'}">${item.name}</span>
-                        <span id="badge-${item.key}" class="hidden text-[9px] font-extrabold bg-amber-500 text-slate-950 px-1.5 py-0.2 rounded-full uppercase tracking-wider">Next</span>
-                    </div>
-                    <div class="col-span-3 text-center font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
-                        ${item.time}
-                    </div>
-                    <div class="col-span-4 text-right font-mono text-xs font-bold ${item.isSunrise ? 'text-slate-400 font-normal' : 'text-emerald-700 dark:text-emerald-400'}">
-                        ${item.iqamah}
-                    </div>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function updateActivePrayerHighlight() {
-            const now = new Date();
-            const mainPrayers = timetable.filter(p => !p.isSunrise);
-            let nextPrayer = null;
-
-            for (let i = 0; i < mainPrayers.length; i++) {
-                const pTime = parseTimeString(mainPrayers[i].time);
-                if (now < pTime) {
-                    nextPrayer = mainPrayers[i];
-                    break;
-                }
-            }
-
-            if (!nextPrayer) {
-                nextPrayer = mainPrayers[0]; // Next prayer is Fajr tomorrow
-            }
-
-            // Highlight rows based on active/next status
-            timetable.forEach(item => {
-                const row = document.getElementById(`row-${item.key}`);
-                const badge = document.getElementById(`badge-${item.key}`);
-
-                if (!row) return;
-
-                if (item.key === nextPrayer.key) {
-                    row.className = "grid grid-cols-12 items-center px-3 py-2 rounded-xl transition-all bg-emerald-500/10 dark:bg-emerald-500/20 border-2 border-emerald-500 dark:border-emerald-400 shadow-sm";
-                    if (badge) badge.classList.remove('hidden');
-                } else {
-                    row.className = `grid grid-cols-12 items-center px-3 py-2 rounded-xl transition-all ${
-                        item.isSunrise 
-                            ? 'bg-slate-50/60 dark:bg-slate-900/30 text-slate-400 border border-transparent' 
-                            : 'bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800 opacity-90'
-                    }`;
-                    if (badge) badge.classList.add('hidden');
-                }
-            });
-        }
-
-        window.onload = function() {
-            renderRows();
-            updateActivePrayerHighlight();
-            // Re-evaluate active row state every minute
-            setInterval(updateActivePrayerHighlight, 60000);
-        };
-    </script>
+    // Initial render and set timer check every minute
+    renderTable();
+    setInterval(renderTable, 60000);
+  </script>
 </body>
 </html>
